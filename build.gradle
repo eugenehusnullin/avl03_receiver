@@ -1,0 +1,44 @@
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+version = '0.0.1'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'avl03_receiver',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+project.ext {
+	nettyVersion = '5.0.0.Alpha2'
+	springVersion = '4.2.3.RELEASE'
+	log4jVersion = '2.2'
+	jsonVersion = '20141113'
+	commonsioVersion = '1.3.+'
+	servletapiVersion = '3.1.0'
+	activeMQVersion = '5.12.+'
+	gsonVersion = '2.3.1'
+}
+
+webAppDirName = 'WebContent'
+
+dependencies {
+	
+    compile group: 'io.netty',					name: 'netty-all', 			version: project.nettyVersion
+    compile group: 'org.apache.logging.log4j',	name: 'log4j-slf4j-impl', 	version: project.log4jVersion
+    compile group: 'org.apache.logging.log4j',	name: 'log4j-core', 		version: project.log4jVersion
+    compile group: 'org.springframework',		name: 'spring-webmvc', 		version: project.springVersion
+    compile group: 'org.springframework',		name: 'spring-jms', 		version: project.springVersion
+    compile group: 'org.json',					name: 'json', 				version: project.jsonVersion
+    compile group: 'org.apache.activemq',		name: 'activemq-client', 	version: project.activeMQVersion
+    compile group: 'com.google.code.gson',		name: 'gson',				version: project.gsonVersion
+    
+    
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: project.servletapiVersion
+    
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}

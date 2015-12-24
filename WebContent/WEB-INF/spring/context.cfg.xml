@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd 
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+	<util:properties id="mainSettings" location="WEB-INF\settings\settings"></util:properties>
+	<context:property-placeholder location="WEB-INF\settings\settings" />
+	<context:annotation-config />
+	
+	<bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="userName" value="${mq.username}"></property>
+		<property name="password" value="${mq.password}"></property>
+		<property name="brokerURL" value="${mq.brokerURL}"></property>
+	</bean>
+	<bean id="cachedConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory" destroy-method="resetConnection">
+		<property name="targetConnectionFactory" ref="amqConnectionFactory"></property>
+		<property name="reconnectOnException" value="true"></property>
+		<property name="sessionCacheSize" value="${mq.sessionCacheSize}"></property>
+	</bean>
+	<bean id="fromDeviceQueue1" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${mq.fromDeviceQueuename1}"></constructor-arg>
+	</bean>
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" >
+		<property name="connectionFactory" ref="cachedConnectionFactory"></property>
+<!-- 		<property name="defaultDestination" ref="fromDeviceQueue"></property> -->
+	</bean>
+	
+	
+	<bean id="contextKeeper" class="moni.avl03.state.ContextKeeper"></bean>
+	<bean id="messageDecoder" class="moni.avl03.netty.MessageDecoder">
+		<property name="contextKeeper" ref="contextKeeper"></property>
+		<property name="handlers">
+			<list>
+				<bean class=" moni.avl03.handlers.JmsSenderHandler">
+					<property name="jmsTemplate" ref="jmsTemplate"></property>
+					<property name="fromDeviceQueue" ref="fromDeviceQueue1"></property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean class="moni.avl03.netty.SocketStarter" init-method="run" destroy-method="stop">
+		<property name="host" value="${in.host}"></property>
+		<property name="port" value="${in.port}"></property>
+		<property name="messageDecoder" ref="messageDecoder"></property>
+	</bean>
+	
+	
+	<bean id="commandListener" class="moni.avl03.income.CommandListener">
+		<property name="contextKeeper" ref="contextKeeper"></property>
+	</bean>
+	<bean id="commandDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${mq.toDeviceQueuename}"></constructor-arg>
+	</bean>
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="cachedConnectionFactory"></property>
+		<property name="destination" ref="commandDestination"></property>
+		<property name="messageListener" ref="commandListener" />
+		<property name="acceptMessagesWhileStopping" value="true"></property>
+	</bean>
+</beans>
