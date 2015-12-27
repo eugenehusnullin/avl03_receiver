@@ -18,6 +18,7 @@ import moni.avl03.netty.MessageContainer;
 
 public class InfoDecoder implements Decoder {
 	private static final Logger logger = LoggerFactory.getLogger(InfoDecoder.class);
+	private static final Logger packetsLogger = LoggerFactory.getLogger("packets");
 
 	private String regGlonass = "\\$\\$(?<Len>\\w{2})(?<Imei>\\d{15})\\|(?<AlarmType>\\w{2})(?<Chip>U|R)(?<State>A|V)(?<Satellites>\\d{2})"
 			+ "(?<Lat>[0-9\\.]{8})(?<LatLetter>N|S)(?<Lon>[0-9\\.]{9})(?<LonLetter>E|W)(?<Speed>[0-9]{3})(?<Course>[0-9]{3})"
@@ -58,6 +59,7 @@ public class InfoDecoder implements Decoder {
 		byte[] bytes = mc.getBytes();
 		try {
 			String str = new String(bytes, "ASCII");
+			packetsLogger.info(str);
 			return decode(str);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("Message is not ASCII coding.");

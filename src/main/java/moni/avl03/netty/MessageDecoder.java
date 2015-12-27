@@ -55,7 +55,6 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 		Message message = decoder.decode(mc);
 
 		if (message != null) {
-
 			Long deviceId = ctx.channel().attr(AK_ID).get();
 			if (deviceId == null) {
 				if (mc.getType() == MessageType.info) {
@@ -73,7 +72,6 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 			handle(message);
 
 		} else {
-			logger.warn("Can't decode message.");
 			ctx.close().sync();
 		}
 	}

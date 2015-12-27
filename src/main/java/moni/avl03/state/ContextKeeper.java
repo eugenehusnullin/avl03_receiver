@@ -34,7 +34,6 @@ public class ContextKeeper {
 	public void writeToContext(Long id, byte[] bytes) {
 		ChannelHandlerContext ctx = getContext(id);
 		if (ctx == null) {
-			// TODO: log it
 			return;
 		}
 

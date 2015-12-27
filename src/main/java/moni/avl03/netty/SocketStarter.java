@@ -53,7 +53,16 @@ public class SocketStarter {
 				.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 		channelFuture = serverBootstrap.bind(host, port).sync();
-		logger.info("Socket started, on host - " + host + ", port - " + port + ".");
+		
+		if (channelFuture.isSuccess()) {
+			logger.info("Socket started, on host - " + host + ", port - " + port + ".");
+		} else {
+			if (channelFuture.isCancelled()) {
+				logger.error("Socket did't opened, it was cacelled.");
+			} else {
+				logger.error("Socket did't opened due error ocured.", channelFuture.cause());
+			}
+		}
 	}
 
 	public void stop() throws InterruptedException {

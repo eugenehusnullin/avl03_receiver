@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<RollingFile name="errors" append="false" fileName="logs/mon03/avl03_receiver/errors.log" filePattern="logs/mon03/avl03_receiver/errors-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="infos" append="false" fileName="logs/mon03/avl03_receiver/info.log" filePattern="logs/mon03/avl03_receiver/info-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="packets" append="false" fileName="logs/mon03/avl03_receiver/packets.log" filePattern="logs/mon03/avl03_receiver/packets-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="responses" append="false" fileName="logs/mon03/avl03_receiver/responses.log" filePattern="logs/mon03/avl03_receiver/responses-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="commands" append="false" fileName="logs/mon03/avl03_receiver/packets.log" filePattern="logs/mon03/avl03_receiver/commands-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="commands" level="info">
+      		<AppenderRef ref="commands" level="info"/>
+    	</Logger>
+		<Logger name="responses" level="info">
+      		<AppenderRef ref="responses" level="info"/>
+    	</Logger>
+		<Logger name="packets" level="info">
+      		<AppenderRef ref="packets" level="info"/>
+    	</Logger>
+		<Root level="info">
+			<AppenderRef ref="infos" level="info" />
+			<AppenderRef ref="errors" level="error" />
+		</Root>
+	</Loggers>
+</Configuration>

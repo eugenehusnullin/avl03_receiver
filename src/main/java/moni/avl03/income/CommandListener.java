@@ -17,6 +17,7 @@ import moni.avl03.state.ContextKeeper;
 
 public class CommandListener implements MessageListener {
 	private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
+	private static final Logger commandsLogger = LoggerFactory.getLogger("commands");
 
 	private ContextKeeper contextKeeper;
 
@@ -47,6 +48,8 @@ public class CommandListener implements MessageListener {
 			JSONObject json = (JSONObject) new JSONTokener(str).nextValue();
 			Long deviceId = json.getLong("deviceId");
 			String command = json.getString("command");
+
+			commandsLogger.info(command);
 
 			try {
 				contextKeeper.writeToContext(deviceId, command.getBytes("ASCII"));

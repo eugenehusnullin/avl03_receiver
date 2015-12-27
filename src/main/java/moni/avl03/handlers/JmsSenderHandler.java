@@ -17,9 +17,9 @@ import moni.avl03.domain.Message;
 
 public class JmsSenderHandler implements Handler {
 
+	private Gson gson = new GsonBuilder().setDateFormat("yyyy.MM.dd HH:mm:ss z").create();
 	private JmsTemplate jmsTemplate;
 	private ActiveMQQueue fromDeviceQueue;
-	private Gson gson = new GsonBuilder().setDateFormat("yyyy.MM.dd HH:mm:ss z").create();
 	private List<Long> deviceIds;
 
 	public void setJmsTemplate(JmsTemplate jmsTemplate) {
