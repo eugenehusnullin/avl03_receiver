@@ -3,6 +3,6 @@
 .settings/*
 .gradle/*
 /build
-WebContent/WEB-INF/settings/settings
+WebContent/WEB-INF/settings
 WebContent/lib/*
 src/main/resources/log4j2.xml
