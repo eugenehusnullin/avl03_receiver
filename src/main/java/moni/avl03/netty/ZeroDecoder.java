@@ -1,5 +1,6 @@
 package moni.avl03.netty;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 
 public class ZeroDecoder extends ReplayingDecoder<Void> {
 	private static final Logger logger = LoggerFactory.getLogger(ZeroDecoder.class);
+	private Charset asciiCharset = Charset.forName("ASCII");
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -25,7 +27,7 @@ public class ZeroDecoder extends ReplayingDecoder<Void> {
 				if (in.readByte() == 0x24) {
 					byte[] sizeBytes = new byte[2];
 					in.readBytes(sizeBytes);
-					int size = Integer.parseInt(new String(sizeBytes, "ASCII"), 16);
+					int size = Integer.parseInt(new String(sizeBytes, asciiCharset), 16);
 
 					in.readerIndex(in.readerIndex() - 4);
 					byte[] messageBytes = new byte[size];
@@ -41,7 +43,7 @@ public class ZeroDecoder extends ReplayingDecoder<Void> {
 				byte[] receBytes = new byte[4];
 				in.readBytes(receBytes);
 				in.readerIndex(in.readerIndex() - 4);
-				String rece = new String(receBytes, "ASCII");
+				String rece = new String(receBytes, asciiCharset);
 				if (rece.equals("Rece")) {
 					int size = in.bytesBefore(0xFF, (byte) 0x23);
 					if (size != -1) {

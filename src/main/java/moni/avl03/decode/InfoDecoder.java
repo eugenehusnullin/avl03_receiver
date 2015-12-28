@@ -1,6 +1,6 @@
 package moni.avl03.decode;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +19,7 @@ import moni.avl03.netty.MessageContainer;
 public class InfoDecoder implements Decoder {
 	private static final Logger logger = LoggerFactory.getLogger(InfoDecoder.class);
 	private static final Logger packetsLogger = LoggerFactory.getLogger("packets");
+	private Charset asciiCharset = Charset.forName("ASCII");
 
 	private String regGlonass = "\\$\\$(?<Len>\\w{2})(?<Imei>\\d{15})\\|(?<AlarmType>\\w{2})(?<Chip>U|R)(?<State>A|V)(?<Satellites>\\d{2})"
 			+ "(?<Lat>[0-9\\.]{8})(?<LatLetter>N|S)(?<Lon>[0-9\\.]{9})(?<LonLetter>E|W)(?<Speed>[0-9]{3})(?<Course>[0-9]{3})"
@@ -57,14 +58,9 @@ public class InfoDecoder implements Decoder {
 	@Override
 	public Message decode(MessageContainer mc) {
 		byte[] bytes = mc.getBytes();
-		try {
-			String str = new String(bytes, "ASCII");
-			packetsLogger.info(str);
-			return decode(str);
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Message is not ASCII coding.");
-			return null;
-		}
+		String str = new String(bytes, asciiCharset);
+		packetsLogger.info(str);
+		return decode(str);
 	}
 
 	@Override
@@ -168,7 +164,7 @@ public class InfoDecoder implements Decoder {
 			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 			cal.set(
 					Integer.parseInt(date.substring(0, 4)),
-					Integer.parseInt(date.substring(4, 6))-1,
+					Integer.parseInt(date.substring(4, 6)) - 1,
 					Integer.parseInt(date.substring(6, 8)),
 					Integer.parseInt(date.substring(8, 10)),
 					Integer.parseInt(date.substring(10, 12)),
@@ -187,7 +183,7 @@ public class InfoDecoder implements Decoder {
 			Calendar gprmcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 			gprmcCalendar.set(
 					Integer.parseInt(date.substring(4)) + yearHundred,
-					Integer.parseInt(date.substring(2, 4))-1,
+					Integer.parseInt(date.substring(2, 4)) - 1,
 					Integer.parseInt(date.substring(0, 2)),
 					Integer.parseInt(time.substring(0, 2)),
 					Integer.parseInt(time.substring(2, 4)),

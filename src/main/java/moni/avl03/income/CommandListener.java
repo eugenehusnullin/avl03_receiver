@@ -1,6 +1,6 @@
 package moni.avl03.income;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -8,18 +8,22 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import moni.avl03.domain.CommandMessage;
 import moni.avl03.state.ContextKeeper;
 
 public class CommandListener implements MessageListener {
 	private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
 	private static final Logger commandsLogger = LoggerFactory.getLogger("commands");
+	private Charset asciiCharset = Charset.forName("ASCII");
 
 	private ContextKeeper contextKeeper;
+	private Gson gson = new GsonBuilder().setDateFormat("yyyy.MM.dd HH:mm:ss z").create();
 
 	public void setContextKeeper(ContextKeeper contextKeeper) {
 		this.contextKeeper = contextKeeper;
@@ -36,26 +40,18 @@ public class CommandListener implements MessageListener {
 			String str = ((TextMessage) message).getText();
 			logger.debug(str);
 
-			sendCommand(str);
+			handleCommand(str);
 
 		} catch (JMSException e) {
 			logger.error("JMSException.", e);
 		}
 	}
 
-	private void sendCommand(String str) {
+	private void handleCommand(String str) {
 		try {
-			JSONObject json = (JSONObject) new JSONTokener(str).nextValue();
-			Long deviceId = json.getLong("deviceId");
-			String command = json.getString("command");
-
-			commandsLogger.info(command);
-
-			try {
-				contextKeeper.writeToContext(deviceId, command.getBytes("ASCII"));
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Send to device error.", e);
-			}
+			CommandMessage cm = gson.fromJson(str, CommandMessage.class);
+			commandsLogger.info(cm.getCommand());
+			contextKeeper.writeToContext(cm.getDeviceId(), cm.getCommand().getBytes(asciiCharset));
 		} catch (JSONException e) {
 			logger.error("Command is not valid json.", e);
 		}
