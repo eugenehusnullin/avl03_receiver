@@ -27,6 +27,7 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 	private ResponseDecoder responseDecoder;
 	private ContextKeeper contextKeeper;
 	private List<Handler> handlers;
+	private SocketManager socketManager;
 
 	public final static AttributeKey<Long> AK_ID = AttributeKey.valueOf("id");
 
@@ -41,6 +42,10 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 
 	public void setContextKeeper(ContextKeeper contextKeeper) {
 		this.contextKeeper = contextKeeper;
+	}
+
+	public void setSocketManager(SocketManager socketManager) {
+		this.socketManager = socketManager;
 	}
 
 	@Override
@@ -82,6 +87,7 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 				handler.handle(message);
 			} catch (Exception e) {
 				logger.error("Error handling message.", e);
+				socketManager.stopSocketAsync();
 			}
 		}
 	}

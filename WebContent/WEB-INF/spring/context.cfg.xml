@@ -36,6 +36,16 @@
 	</bean>
 	
 	
+	<bean id="testQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${mq.testQueuename}"></constructor-arg>
+	</bean>
+	<bean id="socketManager" class="moni.avl03.netty.SocketManager" init-method="init" destroy-method="stop">
+		<property name="socketStarter" ref="socketStarter"></property>
+		<property name="jmsTemplate" ref="jmsTemplate"></property>
+		<property name="testQueue" ref="testQueue"></property>
+	</bean>
+	
+	
 	<bean id="contextKeeper" class="moni.avl03.state.ContextKeeper"></bean>
 	<bean id="messageDecoder" class="moni.avl03.netty.MessageDecoder">
 		<property name="contextKeeper" ref="contextKeeper"></property>
@@ -47,8 +57,9 @@
 				</bean>
 			</list>
 		</property>
+		<property name="socketManager" ref="socketManager"></property>
 	</bean>
-	<bean class="moni.avl03.netty.SocketStarter" init-method="run" destroy-method="stop">
+	<bean id="socketStarter" class="moni.avl03.netty.SocketStarter" init-method="run" destroy-method="stop">
 		<property name="host" value="${in.host}"></property>
 		<property name="port" value="${in.port}"></property>
 		<property name="messageDecoder" ref="messageDecoder"></property>

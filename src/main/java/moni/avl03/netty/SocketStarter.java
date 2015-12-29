@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -21,7 +22,7 @@ public class SocketStarter {
 	private EventLoopGroup bossGroup;
 	private EventLoopGroup workerGroup;
 	private ServerBootstrap serverBootstrap;
-	private ChannelFuture channelFuture;
+	private Channel socketChannel;
 	private MessageDecoder messageDecoder;
 
 	public void setHost(String host) {
@@ -50,10 +51,13 @@ public class SocketStarter {
 					}
 				})
 				.option(ChannelOption.SO_BACKLOG, 128)
-				.childOption(ChannelOption.SO_KEEPALIVE, true);
+				.option(ChannelOption.SO_LINGER, 0)
+				.childOption(ChannelOption.SO_KEEPALIVE, true)
+				.childOption(ChannelOption.SO_LINGER, 0);
 
-		channelFuture = serverBootstrap.bind(host, port).sync();
-		
+		ChannelFuture channelFuture = serverBootstrap.bind(host, port).sync();
+		socketChannel = channelFuture.channel();
+
 		if (channelFuture.isSuccess()) {
 			logger.info("Socket started, on host - " + host + ", port - " + port + ".");
 		} else {
@@ -66,17 +70,19 @@ public class SocketStarter {
 	}
 
 	public void stop() throws InterruptedException {
-		ChannelFuture closeFuture = channelFuture.channel().close();
-		closeFuture.sync();
+		if (socketChannel != null && socketChannel.isOpen()) {
+			ChannelFuture closeFuture = socketChannel.close();
+			closeFuture.sync();
 
-		@SuppressWarnings("rawtypes")
-		Future fw = workerGroup.shutdownGracefully();
-		@SuppressWarnings("rawtypes")
-		Future fb = bossGroup.shutdownGracefully();
-		try {
-			fb.await();
-			fw.await();
-		} catch (InterruptedException ignore) {
+			@SuppressWarnings("rawtypes")
+			Future fb = bossGroup.shutdownGracefully();
+			@SuppressWarnings("rawtypes")
+			Future fw = workerGroup.shutdownGracefully();
+			try {
+				fb.await(1000);
+				fw.await(1000);
+			} catch (InterruptedException ignore) {
+			}
 		}
 
 		logger.info("Socket stoped.");
