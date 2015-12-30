@@ -50,7 +50,7 @@ public class CommandListener implements MessageListener {
 	private void handleCommand(String str) {
 		try {
 			CommandMessage cm = gson.fromJson(str, CommandMessage.class);
-			commandsLogger.info(cm.getCommand());
+			commandsLogger.debug(cm.getDeviceId() + " " + cm.getCommand());
 			contextKeeper.writeToContext(cm.getDeviceId(), cm.getCommand().getBytes(asciiCharset));
 		} catch (JSONException e) {
 			logger.error("Command is not valid json.", e);

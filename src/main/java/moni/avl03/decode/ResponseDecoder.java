@@ -19,7 +19,7 @@ public class ResponseDecoder implements Decoder {
 	public Message decode(MessageContainer mc) {
 		byte[] bytes = mc.getBytes();
 		String str = new String(bytes, asciiCharset);
-		responsesLogger.info(str);
+		responsesLogger.debug(str);
 		return decode(str);
 	}
 

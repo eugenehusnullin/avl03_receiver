@@ -59,7 +59,7 @@ public class InfoDecoder implements Decoder {
 	public Message decode(MessageContainer mc) {
 		byte[] bytes = mc.getBytes();
 		String str = new String(bytes, asciiCharset);
-		packetsLogger.info(str);
+		packetsLogger.debug(str);
 		return decode(str);
 	}
 
