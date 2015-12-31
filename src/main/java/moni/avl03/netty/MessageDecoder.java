@@ -1,5 +1,6 @@
 package moni.avl03.netty;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +79,13 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 
 		} else {
 			ctx.close().sync();
+		}
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		if (!(cause instanceof IOException)) {
+			super.exceptionCaught(ctx, cause);
 		}
 	}
 
