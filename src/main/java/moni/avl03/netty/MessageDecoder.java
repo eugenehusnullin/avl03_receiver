@@ -55,13 +55,14 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 			logger.warn("msg is not instance of MessageContainer, it is: " + msg.getClass().getName());
 			return;
 		}
+		
+		Long deviceId = ctx.channel().attr(AK_ID).get();
 
 		MessageContainer mc = (MessageContainer) msg;
 		Decoder decoder = chooseDecoder(mc);
-		Message message = decoder.decode(mc);
+		Message message = decoder.decode(deviceId, mc);
 
 		if (message != null) {
-			Long deviceId = ctx.channel().attr(AK_ID).get();
 			if (deviceId == null) {
 				if (mc.getType() == MessageType.info) {
 					deviceId = ((InfoMessage) message).getImei();

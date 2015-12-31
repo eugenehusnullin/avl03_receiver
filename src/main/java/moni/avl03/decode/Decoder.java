@@ -5,7 +5,7 @@ import moni.avl03.netty.MessageContainer;
 
 public interface Decoder {
 
-	Message decode(MessageContainer mc);
+	Message decode(Long deviceId, MessageContainer mc);
 
 	Message decode(String str);
 }

@@ -4,31 +4,37 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</Console>
-		<RollingFile name="errors" append="false" fileName="logs/mon03/avl03_receiver/errors.log" filePattern="logs/mon03/avl03_receiver/errors-%d{yyyy-MM-dd}-%i.log">
+		<RollingFile name="errors" append="true" fileName="logs/mon03/avl03_receiver/errors.log" filePattern="logs/mon03/avl03_receiver/errors-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 			</Policies>
 		</RollingFile>
-		<RollingFile name="infos" append="false" fileName="logs/mon03/avl03_receiver/info.log" filePattern="logs/mon03/avl03_receiver/info-%d{yyyy-MM-dd}-%i.log">
+		<RollingFile name="infos" append="true" fileName="logs/mon03/avl03_receiver/info.log" filePattern="logs/mon03/avl03_receiver/info-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 			</Policies>
 		</RollingFile>
-		<RollingFile name="packets" append="false" fileName="logs/mon03/avl03_receiver/packets.log" filePattern="logs/mon03/avl03_receiver/packets-%d{yyyy-MM-dd}-%i.log">
+		<RollingFile name="packets" append="true" fileName="logs/mon03/avl03_receiver/packets.log" filePattern="logs/mon03/avl03_receiver/packets-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 			</Policies>
 		</RollingFile>
-		<RollingFile name="responses" append="false" fileName="logs/mon03/avl03_receiver/responses.log" filePattern="logs/mon03/avl03_receiver/responses-%d{yyyy-MM-dd}-%i.log">
+		<RollingFile name="responses" append="true" fileName="logs/mon03/avl03_receiver/responses.log" filePattern="logs/mon03/avl03_receiver/responses-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 			</Policies>
 		</RollingFile>
-		<RollingFile name="commands" append="false" fileName="logs/mon03/avl03_receiver/commands.log" filePattern="logs/mon03/avl03_receiver/commands-%d{yyyy-MM-dd}-%i.log">
+		<RollingFile name="commands" append="true" fileName="logs/mon03/avl03_receiver/commands.log" filePattern="logs/mon03/avl03_receiver/commands-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="undecoded" append="true" fileName="logs/mon03/avl03_receiver/undecoded.log" filePattern="logs/mon03/avl03_receiver/undecoded-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
@@ -44,6 +50,9 @@
     	</Logger>
 		<Logger name="packets" level="debug">
       		<AppenderRef ref="packets" level="debug"/>
+    	</Logger>
+    	<Logger name="undecoded" level="debug">
+      		<AppenderRef ref="undecoded" level="debug"/>
     	</Logger>
 		<Root level="info">
 			<AppenderRef ref="infos" level="info" />

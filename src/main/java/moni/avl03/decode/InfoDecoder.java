@@ -19,6 +19,7 @@ import moni.avl03.netty.MessageContainer;
 public class InfoDecoder implements Decoder {
 	private static final Logger logger = LoggerFactory.getLogger(InfoDecoder.class);
 	private static final Logger packetsLogger = LoggerFactory.getLogger("packets");
+	private static final Logger undecodedLogger = LoggerFactory.getLogger("undecoded");
 	private Charset asciiCharset = Charset.forName("ASCII");
 
 	private String regGlonass = "\\$\\$(?<Len>\\w{2})(?<Imei>\\d{15})\\|(?<AlarmType>\\w{2})(?<Chip>U|R)(?<State>A|V)(?<Satellites>\\d{2})"
@@ -56,7 +57,7 @@ public class InfoDecoder implements Decoder {
 	}
 
 	@Override
-	public Message decode(MessageContainer mc) {
+	public Message decode(Long deviceId, MessageContainer mc) {
 		byte[] bytes = mc.getBytes();
 		String str = new String(bytes, asciiCharset);
 		packetsLogger.debug(str);
@@ -65,20 +66,26 @@ public class InfoDecoder implements Decoder {
 
 	@Override
 	public Message decode(String str) {
-		String[] strArray = str.split("\\|");
+		try {
+			String[] strArray = str.split("\\|");
 
-		switch (strArray.length) {
-		case 14:
-		case 15:
-			return decodeGprmc(str);
+			switch (strArray.length) {
+			case 14:
+			case 15:
+				return decodeGprmc(str);
 
-		case 16:
-		case 17:
-		case 19:
-			return decodeGlonass(str, strArray.length);
+			case 16:
+			case 17:
+			case 19:
+				return decodeGlonass(str, strArray.length);
 
-		default:
-			logger.error("Undefined protocol for message: " + str);
+			default:
+				logger.error("Undefined protocol for message: " + str);
+				undecodedLogger.debug(str);
+				return null;
+			}
+		} catch (Exception e) {
+			undecodedLogger.debug(str);
 			return null;
 		}
 	}

@@ -16,10 +16,12 @@ public class ResponseDecoder implements Decoder {
 	private Charset asciiCharset = Charset.forName("ASCII");
 
 	@Override
-	public Message decode(MessageContainer mc) {
+	public Message decode(Long deviceId, MessageContainer mc) {
 		byte[] bytes = mc.getBytes();
 		String str = new String(bytes, asciiCharset);
-		responsesLogger.debug(str);
+		if (deviceId != null) {
+			responsesLogger.debug(deviceId + " " + str);
+		}
 		return decode(str);
 	}
 
