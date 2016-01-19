@@ -22,6 +22,7 @@ public class SocketManager {
 
 	private boolean stoped = false;
 	private Object sync = new Object();
+	private boolean appStoped = false;
 
 	public void setSocketStarter(SocketStarter socketStarter) {
 		this.socketStarter = socketStarter;
@@ -38,17 +39,26 @@ public class SocketManager {
 	public void init() {
 		taskScheduler.initialize();
 	}
-	
+
 	public void stop() {
+		appStoped = true;
 		taskScheduler.shutdown();
 	}
 
 	public void stopSocketAsync() {
+		if (appStoped) {
+			return;
+		}
+
 		Date d = new Date(new Date().getTime() + (100));
 		taskScheduler.schedule(this::stopSocket, d);
 	}
 
 	private void stopSocket() {
+		if (appStoped) {
+			return;
+		}
+
 		synchronized (sync) {
 			if (!stoped) {
 				stoped = true;
@@ -67,6 +77,10 @@ public class SocketManager {
 	}
 
 	private void startSocket() {
+		if (appStoped) {
+			return;
+		}
+
 		synchronized (sync) {
 			if (stoped) {
 				stoped = false;
@@ -88,6 +102,10 @@ public class SocketManager {
 	}
 
 	private void checkJms() {
+		if (appStoped) {
+			return;
+		}
+
 		boolean canConnect = false;
 		try {
 			jmsTemplate.send(testQueue, new MessageCreator() {
