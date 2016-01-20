@@ -2,6 +2,8 @@ package moni.avl03.decode;
 
 import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -187,16 +189,17 @@ public class InfoDecoder implements Decoder {
 	private Date parceGprmcUtcDate(String date, String time) {
 		if (date != null && time != null) {
 			int yearHundred = ((int) (LocalDate.now().getYear() / 100)) * 100;
-			Calendar gprmcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			gprmcCalendar.set(
+			ZonedDateTime zdt = ZonedDateTime.of(
 					Integer.parseInt(date.substring(4)) + yearHundred,
-					Integer.parseInt(date.substring(2, 4)) - 1,
+					Integer.parseInt(date.substring(2, 4)),
 					Integer.parseInt(date.substring(0, 2)),
 					Integer.parseInt(time.substring(0, 2)),
 					Integer.parseInt(time.substring(2, 4)),
-					Integer.parseInt(time.substring(4, 6)));
+					Integer.parseInt(time.substring(4, 6)),
+					0,
+					ZoneId.of("UTC"));
 
-			return gprmcCalendar.getTime();
+			return Date.from(zdt.toInstant());
 		}
 		return null;
 	}
