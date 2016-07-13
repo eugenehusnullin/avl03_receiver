@@ -79,7 +79,7 @@ public class MessageDecoder extends ChannelHandlerAdapter {
 			handle(message);
 
 		} else {
-			ctx.close().sync();
+			//ctx.close().sync();
 		}
 	}
 
